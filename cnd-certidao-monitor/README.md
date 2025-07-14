@@ -1,73 +1,47 @@
-# Welcome to your Lovable project
+# CND Certidão Monitor - Frontend
 
-## Project info
+Este é o frontend da aplicação CND Certidão Monitor.
 
-**URL**: https://lovable.dev/projects/a058d6af-f4a3-473c-bcae-ff6c725186aa
+## Como executar o ambiente de desenvolvimento
 
-## How can I edit this code?
+Para executar o ambiente de desenvolvimento completo (backend e frontend), siga estas etapas:
 
-There are several ways of editing your application.
+1. **Pré-requisitos:**
+   - [Docker](https://docs.docker.com/get-docker/) e [Docker Compose](https://docs.docker.com/compose/install/) instalados.
+   - [Node.js](https://nodejs.org/) (versão 18 ou superior) e [npm](https://www.npmjs.com/) instalados.
 
-**Use Lovable**
+2. **Variáveis de Ambiente:**
+   - Na raiz do projeto, crie um arquivo chamado `.env` e adicione as seguintes variáveis de ambiente, substituindo os valores pelos da sua configuração do PostgreSQL:
+     ```
+     SPRING_DATASOURCE_URL=jdbc:postgresql://bd-cnd:5432/seu_banco_de_dados
+     SPRING_DATASOURCE_USERNAME=seu_usuario
+     SPRING_DATASOURCE_PASSWORD=sua_senha
+     POSTGRES_DB=seu_banco_de_dados
+     POSTGRES_USER=seu_usuario
+     POSTGRES_PASSWORD=sua_senha
+     WATCHTOWER_HTTP_API_TOKEN=seu_token_aqui
+     ```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a058d6af-f4a3-473c-bcae-ff6c725186aa) and start prompting.
+3. **Iniciar o Backend:**
+   - Na raiz do projeto (onde está o `docker-compose.yml`), execute o seguinte comando para construir e iniciar os contêineres do backend e do banco de dados:
+     ```bash
+     docker-compose up -d --build
+     ```
+   - O backend estará disponível em `http://localhost:8080`.
 
-Changes made via Lovable will be committed automatically to this repo.
+4. **Iniciar o Frontend:**
+   - Navegue até a pasta `cnd-certidao-monitor`:
+     ```bash
+     cd cnd-certidao-monitor
+     ```
+   - Instale as dependências do frontend:
+     ```bash
+     npm install
+     ```
+   - Inicie o servidor de desenvolvimento do frontend:
+     ```bash
+     npm run dev
+     ```
+   - O frontend estará disponível em `http://localhost:5173`.
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/a058d6af-f4a3-473c-bcae-ff6c725186aa) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Agora você pode acessar a aplicação no seu navegador e o frontend se comunicará com o backend.
