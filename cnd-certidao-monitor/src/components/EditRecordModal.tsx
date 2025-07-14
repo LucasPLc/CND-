@@ -42,7 +42,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ isOpen, onClose, reco
   const handleSave = async () => {
     if (!formData) return;
 
-    const url = record ? `/api/certidoes/${record.id}` : '/api/certidoes';
+    const url = record ? `/clientes/${record.id}` : '/clientes';
     const method = record ? 'PUT' : 'POST';
 
     try {

@@ -64,5 +64,23 @@ public class ClienteController {
         registroClienteService.excluir(clienteId);
     }
 
+    @PostMapping("/delete-batch")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removerEmMassa(@RequestBody List<Integer> clienteIds) {
+        clienteIds.forEach(registroClienteService::excluir);
+    }
 
+    @GetMapping("/{clienteId}/pdf")
+    public ResponseEntity<byte[]> downloadPdf(@PathVariable Integer clienteId) {
+        // Lógica para buscar o PDF do cliente.
+        // Como não tenho o serviço para isso, vou retornar um PDF vazio de exemplo.
+        if (!clienteRepository.existsById(clienteId)) {
+            return ResponseEntity.notFound().build();
+        }
+        byte[] pdfContent = new byte[0]; // Substituir pela lógica real
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=cnd-" + clienteId + ".pdf")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(pdfContent);
+    }
 }
