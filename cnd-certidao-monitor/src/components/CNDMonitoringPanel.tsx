@@ -74,47 +74,26 @@ const CNDMonitoringPanel: React.FC = () => {
     tiposCertidao: [],
   });
 
-  // Mock data - replace with actual API calls
-  const mockData: CNDRecord[] = [
-    {
-      id: '1',
-      cnpj: '12.345.678/0001-90',
-      nomeContribuinte: 'Empresa ABC Ltda',
-      tipo: 'FED',
-      orgaoEmissor: 'Receita Federal',
-      situacaoCertidao: 'Negativa',
-      dataEmissao: '2024-01-15',
-      dataValidade: '2024-07-15',
-      statusProcessamento: 'Concluído',
-      dataProcessamento: '2024-01-16',
-      codigoControle: 'ABC123456789DEF',
-      arquivoDisponivel: true,
-    },
-    {
-      id: '2',
-      cnpj: '98.765.432/0001-10',
-      nomeContribuinte: 'Comércio XYZ S.A.',
-      tipo: 'EST',
-      orgaoEmissor: 'SEFAZ-SP',
-      situacaoCertidao: 'Positiva com Efeitos de Negativa',
-      dataEmissao: '2024-02-10',
-      dataValidade: '2024-08-10',
-      statusProcessamento: 'Pendente',
-      dataProcessamento: '2024-02-11',
-      codigoControle: 'XYZ987654321GHI',
-      arquivoDisponivel: false,
-    }
-  ];
-
   useEffect(() => {
-    // Simulate API call
-    setLoading(true);
-    setTimeout(() => {
-      setRecords(mockData);
-      setFilteredRecords(mockData);
-      setLoading(false);
-    }, 1000);
+    fetchRecords();
   }, []);
+
+  const fetchRecords = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/certidoes');
+      if (!response.ok) {
+        throw new Error('Erro ao buscar registros');
+      }
+      const data = await response.json();
+      setRecords(data);
+      setFilteredRecords(data);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // CNPJ mask function
   const formatCNPJ = (value: string) => {
@@ -218,10 +197,22 @@ const CNDMonitoringPanel: React.FC = () => {
 
   const handleDownload = async (recordId: string) => {
     try {
-      // API call to download PDF
+      const response = await fetch(`/api/certidoes/${recordId}/pdf`);
+      if (!response.ok) {
+        throw new Error('PDF não disponível ou erro no servidor.');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cnd-${recordId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
       toast.success('Download iniciado com sucesso!');
     } catch (error) {
-      toast.error('Erro ao fazer download do arquivo');
+      toast.error(error.message);
     }
   };
 
@@ -250,24 +241,36 @@ const CNDMonitoringPanel: React.FC = () => {
 
   const handleDelete = async (recordId: string) => {
     try {
-      // API call to delete record
-      setRecords(prev => prev.filter(record => record.id !== recordId));
-      setFilteredRecords(prev => prev.filter(record => record.id !== recordId));
+      const response = await fetch(`/api/certidoes/${recordId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Erro ao excluir registro');
+      }
       toast.success('Registro excluído com sucesso!');
+      fetchRecords(); // Refresh data
     } catch (error) {
-      toast.error('Erro ao excluir registro');
+      toast.error(error.message);
     }
   };
 
   const handleBulkDelete = async () => {
     try {
-      // API call to delete multiple records
-      setRecords(prev => prev.filter(record => !selectedRecords.includes(record.id)));
-      setFilteredRecords(prev => prev.filter(record => !selectedRecords.includes(record.id)));
-      setSelectedRecords([]);
+      const response = await fetch('/api/certidoes/delete-batch', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: selectedRecords }),
+      });
+      if (!response.ok) {
+        throw new Error('Erro ao excluir registros selecionados');
+      }
       toast.success(`${selectedRecords.length} registros excluídos com sucesso!`);
+      setSelectedRecords([]);
+      fetchRecords(); // Refresh data
     } catch (error) {
-      toast.error('Erro ao excluir registros selecionados');
+      toast.error(error.message);
     }
   };
 

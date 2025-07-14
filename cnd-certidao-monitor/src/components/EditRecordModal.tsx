@@ -39,15 +39,32 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({ isOpen, onClose, reco
     }
   }, [record]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData) return;
-    
+
+    const url = record ? `/api/certidoes/${record.id}` : '/api/certidoes';
+    const method = record ? 'PUT' : 'POST';
+
     try {
-      onSave(formData);
-      toast.success('Registro atualizado com sucesso!');
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao salvar registro');
+      }
+
+      const savedRecord = await response.json();
+      onSave(savedRecord);
+      toast.success(`Registro ${record ? 'atualizado' : 'criado'} com sucesso!`);
       onClose();
     } catch (error) {
-      toast.error('Erro ao salvar registro');
+      toast.error(error.message);
     }
   };
 
