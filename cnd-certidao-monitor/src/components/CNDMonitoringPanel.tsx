@@ -81,7 +81,7 @@ const CNDMonitoringPanel: React.FC = () => {
   const fetchRecords = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/certidoes');
+      const response = await fetch('/clientes');
       if (!response.ok) {
         throw new Error('Erro ao buscar registros');
       }
@@ -197,7 +197,7 @@ const CNDMonitoringPanel: React.FC = () => {
 
   const handleDownload = async (recordId: string) => {
     try {
-      const response = await fetch(`/api/certidoes/${recordId}/pdf`);
+      const response = await fetch(`/clientes/${recordId}/pdf`);
       if (!response.ok) {
         throw new Error('PDF não disponível ou erro no servidor.');
       }
@@ -241,7 +241,7 @@ const CNDMonitoringPanel: React.FC = () => {
 
   const handleDelete = async (recordId: string) => {
     try {
-      const response = await fetch(`/api/certidoes/${recordId}`, {
+      const response = await fetch(`/clientes/${recordId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -256,12 +256,12 @@ const CNDMonitoringPanel: React.FC = () => {
 
   const handleBulkDelete = async () => {
     try {
-      const response = await fetch('/api/certidoes/delete-batch', {
+      const response = await fetch('/clientes/delete-batch', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ids: selectedRecords }),
+        body: JSON.stringify(selectedRecords.map(id => parseInt(id, 10))),
       });
       if (!response.ok) {
         throw new Error('Erro ao excluir registros selecionados');
