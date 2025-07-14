@@ -1,0 +1,7 @@
+package br.com.sisaudcon.saam.saam_sped_cnd.domain.exception;
+
+public class ClienteIdInvalidoException extends RuntimeException {
+    public ClienteIdInvalidoException(String msg) {
+        super(msg);
+    }
+}
