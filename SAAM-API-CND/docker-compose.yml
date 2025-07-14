@@ -1,0 +1,48 @@
+version: '3.7'
+
+services:
+  cnd:
+    container_name: cnd-app
+    image: registry.gitlab.com/sisaudcon/SAAM-API-CNDt:latest
+    restart: always
+    ports:
+      - 8080:8080
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=cnd"
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+
+  bd-cnd:
+    container_name: cnd-db
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 5541:5432
+    volumes:
+      - postgres_cnd_data:/var/lib/postgresql/data
+
+  watchtower:
+    container_name: cnd-watchtower
+    image: containrrr/watchtower:latest
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config-app.json:/config.json:ro
+    command: --http-api-update --scope=cnd
+    environment:
+      WATCHTOWER_HTTP_API_TOKEN: ${WATCHTOWER_HTTP_API_TOKEN}
+      WATCHTOWER_REGISTRY_AUTH: "true"
+    ports:
+      - 8084:8080
+    labels:
+      - "com.centurylinklabs.watchtower.scope=cnd"
+
+volumes:
+  postgres_cnd_data:
