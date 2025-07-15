@@ -3,13 +3,10 @@ version: '3.7'
 services:
   cnd:
     container_name: cnd-app
-    image: registry.gitlab.com/sisaudcon/SAAM-API-CNDt:latest
+    image: registry.gitlab.com/sisaudcon/saam-api-cnd:latest
     restart: always
     ports:
       - 8080:8080
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
-      - "com.centurylinklabs.watchtower.scope=cnd"
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
@@ -27,6 +24,25 @@ services:
       - 5541:5432
     volumes:
       - postgres_cnd_data:/var/lib/postgresql/data
+
+  frontend:
+    container_name: cnd-frontend
+    build: ../cnd-certidoes-monitor-14  # Caminho para Dockerfile frontend
+    depends_on:
+      - cnd
+    # Não expõe porta do frontend diretamente, nginx serve frontend
+
+  nginx:
+    image: nginx:alpine
+    container_name: cnd-nginx
+    ports:
+      - 3000:80  # acessa frontend+proxy no host:3000
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ../cnd-certidoes-monitor-14/dist:/usr/share/nginx/html:ro
+    depends_on:
+      - frontend
+      - cnd
 
   watchtower:
     container_name: cnd-watchtower

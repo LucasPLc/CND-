@@ -16,6 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("clientes")
+@CrossOrigin(origins = "http://localhost:8081", 
+             allowedHeaders = "*", 
+             methods = {RequestMethod.GET, RequestMethod.OPTIONS})
 public class ClienteController {
 
     private final RegistroClienteService registroClienteService;
@@ -63,6 +66,20 @@ public class ClienteController {
         }
         registroClienteService.excluir(clienteId);
     }
+	@RestControllerAdvice
+    public class ApiExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException ex) {
+        var erros = ex.getBindingResult().getFieldErrors()
+            .stream()
+            .map(err -> err.getField() + ": " + err.getDefaultMessage())
+            .toList();
+
+        return ResponseEntity.badRequest().body(erros);
+    }
+}
+
 
 
 }
