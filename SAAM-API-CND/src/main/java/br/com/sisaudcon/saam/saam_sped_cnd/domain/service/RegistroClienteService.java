@@ -30,9 +30,9 @@ public class RegistroClienteService {
     @Transactional
     public Cliente salvarClienteComEmpresa(Cliente cliente) {
         logger.info("Iniciando processo de salvar cliente com empresa. Cliente: {}", cliente.getCnpj());
-        int situacao = situacaoValidationService.validarAutorizacaoEmpresa(cliente.getEmpresa().getIdEmpresa());
-        String statusEmpresa = String.valueOf(situacao);
-        logger.debug("Situação da empresa validada: {}", statusEmpresa);
+        // A validação da empresa será removida daqui.
+        String statusEmpresa = "1"; // Status padrão para novas empresas
+        logger.debug("Situação da empresa definida como padrão: {}", statusEmpresa);
 
         Empresa empresaSalva = salvarOuAtualizarEmpresa(cliente.getEmpresa(), statusEmpresa);
         cliente.setEmpresa(empresaSalva);
