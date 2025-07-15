@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -14,6 +16,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ClienteNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleClienteNotFoundException(ClienteNotFoundException ex) {
@@ -70,6 +74,7 @@ public class GlobalExceptionHandler {
     // captura tudo que não foi tratado e devolve um 500:
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String,String>> handleAllUncaught(Exception ex) {
+        logger.error("Erro não tratado: ", ex);
         Map<String,String> body = new HashMap<>();
         body.put("error", "Erro interno no servidor. Tente novamente mais tarde.");
         return ResponseEntity
